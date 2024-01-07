@@ -4,7 +4,7 @@ import express, { Request, Response, Application } from "express";
 import { Database } from "./common/db/db.config";
 import { AdminRouter } from "./domains/admin/routes/admin.route";
 import { UserRouter } from "./domains/user/routes/user.route";
-
+import cors from "cors";
 @Service()
 export class Main {
   app: Application = express();
@@ -21,6 +21,7 @@ export class Main {
 
   bodyParserFunc() {
     this.app.use(express.json());
+    this.app.use(cors());
   }
 
   startServer() {
