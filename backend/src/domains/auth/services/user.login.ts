@@ -3,41 +3,43 @@ import { Service } from "typedi";
 import { UserModel } from "../../../common/models/UserModel";
 import { TokenModel } from "../../../common/models/TokenModel";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 import { GetToken } from "../../common/middleware/create-token";
 dotenv.config({ path: ".env" });
 
 @Service()
-export class AdminLoginService {
+export class UserLoginService {
+  secretKey: string = process.env.SECRET_KEY || "secret";
+
   constructor(private createToken: GetToken) {}
 
-  async loginAdmin(req: Request, res: Response) {
+  async loginUser(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
 
-      const admin = await UserModel.findOne({ email });
+      const user = await UserModel.findOne({ email });
 
-      if (!admin) {
+      if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, admin.password);
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      const token = this.createToken.createToken(admin.email);
-      // console.log(`token is ${token}`);
-      await TokenModel.create({ token, isActive: true, role: admin.role });
+      const token = this.createToken.createToken(user.email);
+      console.log(`token is ${token}`);
+      await TokenModel.create({ token, isActive: true, role: user.role });
 
       const responseData = {
         token,
-        admin: {
-          username: admin.username,
-          email: admin.email,
-          role: admin.role,
+        user: {
+          username: user.username,
+          email: user.email,
+          role: user.role,
         },
       };
 

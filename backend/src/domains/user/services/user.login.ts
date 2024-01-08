@@ -3,13 +3,16 @@ import { Service } from "typedi";
 import { UserModel } from "../../../common/models/UserModel";
 import { TokenModel } from "../../../common/models/TokenModel";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
+import { GetToken } from "../../common/middleware/create-token";
 dotenv.config({ path: ".env" });
 
 @Service()
 export class UserLoginService {
   secretKey: string = process.env.SECRET_KEY || "secret";
+
+  constructor(private createToken: GetToken) {}
 
   async loginUser(req: Request, res: Response) {
     try {
@@ -27,10 +30,8 @@ export class UserLoginService {
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      const token = jwt.sign({ userId: user._id }, this.secretKey, {
-        expiresIn: "1h",
-      });
-
+      const token = this.createToken.createToken(user.email);
+      console.log(`token is ${token}`);
       await TokenModel.create({ token, isActive: true, role: user.role });
 
       const responseData = {

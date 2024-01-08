@@ -1,7 +1,6 @@
 import { Service } from "typedi";
 import { UserModel } from "../../../common/models/UserModel";
 import { Request, Response } from "express";
-import { AdminModel } from "../../../common/models/AdminModel";
 
 @Service()
 export class GetUsers {
@@ -9,7 +8,7 @@ export class GetUsers {
   async getUsers(req: Request, res: Response) {
     try {
       const users = await UserModel.find({ role: "user" });
-      const admins = await AdminModel.find({ role: "admin" });
+      const admins = await UserModel.find({ role: "admin" });
 
       const allUsers = [...admins, ...users];
 

@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import { Service } from "typedi";
-import { AdminModel } from "../../../common/models/AdminModel";
+import { UserModel } from "../../../common/models/UserModel";
+import { GetToken } from "../../common/middleware/create-token";
+import { TokenModel } from "../../../common/models/TokenModel";
 import bcrypt from "bcrypt";
 
 @Service()
 export class AdminRegisterService {
-  constructor() {}
+  constructor(private createToken: GetToken) {}
 
   async registerAdmin(req: Request, res: Response) {
     try {
@@ -21,15 +23,23 @@ export class AdminRegisterService {
           role: "admin",
         };
 
-        const registerAdmin = await AdminModel.findOne({ email });
+        const registerAdmin = await UserModel.findOne({ email });
 
         if (registerAdmin) {
           return res.status(409).json({ error: "Admin is already registered" });
         }
 
-        await AdminModel.create(adminObj);
+        const token = this.createToken.createToken(adminObj.email);
 
-        res.status(200).json({ message: "Admin registered successfully" });
+        await TokenModel.create({ token, isActive: true, role: adminObj.role });
+        await UserModel.create(adminObj);
+        const responseData = {
+          token,
+          adminObj,
+        };
+        res
+          .status(201)
+          .json({ message: "Admin registered successfully", responseData });
       } else {
         res.status(400).json({ error: "Invalid signup code" });
       }

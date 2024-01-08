@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import { Service } from "typedi";
 import bcrypt from "bcrypt";
 import { UserModel } from "../../../common/models/UserModel";
+import { GetToken } from "../../common/middleware/create-token";
+import { TokenModel } from "../../../common/models/TokenModel";
 
 @Service()
 export class UserRegisterService {
-  constructor() {}
+  constructor(private createToken: GetToken) {}
 
   async registerUser(req: Request, res: Response) {
     try {
@@ -25,7 +27,10 @@ export class UserRegisterService {
       if (registerUser) {
         return res.status(409).json({ error: "User is already registered" });
       }
+      const token = this.createToken.createToken(userObj.email);
+      console.log(`token is ${token}`);
 
+      await TokenModel.create({ token, isActive: true, role: userObj.role });
       await UserModel.create(userObj);
 
       res.status(200).json({ message: "User registered successfully" });

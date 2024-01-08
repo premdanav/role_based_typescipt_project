@@ -4,6 +4,7 @@ import express, { Request, Response, Application } from "express";
 import { Database } from "./common/db/db.config";
 import { AdminRouter } from "./domains/admin/routes/admin.route";
 import { UserRouter } from "./domains/user/routes/user.route";
+import { LoginRouter } from "./domains/auth/routes/user.route";
 import cors from "cors";
 @Service()
 export class Main {
@@ -13,7 +14,8 @@ export class Main {
 
   constructor(
     private adminRouter: AdminRouter,
-    private userRouter: UserRouter
+    private userRouter: UserRouter,
+    private loginRouter: LoginRouter
   ) {
     this.bodyParserFunc();
     this.addAllRoutes();
@@ -34,6 +36,7 @@ export class Main {
   private addAllRoutes() {
     this.app.use("/admin", this.adminRouter.getRoutes());
     this.app.use("/user", this.userRouter.getRoutes());
+    this.app.use("/auth", this.loginRouter.getRoutes());
   }
 }
 

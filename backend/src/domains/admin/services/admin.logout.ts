@@ -12,11 +12,7 @@ export class LogoutService {
         res.status(400).json({ error: "No token found" });
       }
 
-      const logoutResult = await TokenModel.findOneAndUpdate(
-        { token },
-        { $set: { isActive: false } },
-        { new: true }
-      );
+      const logoutResult = await TokenModel.findOneAndDelete({ token });
 
       if (logoutResult) {
         res.status(200).json({ message: "Logout successful." });
