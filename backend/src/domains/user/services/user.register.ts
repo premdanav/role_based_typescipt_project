@@ -28,12 +28,17 @@ export class UserRegisterService {
         return res.status(409).json({ error: "User is already registered" });
       }
       const token = this.createToken.createToken(userObj.email);
-      console.log(`token is ${token}`);
-
+      // console.log(`token is ${token}`);
+      const responseData = {
+        token,
+        userObj,
+      };
       await TokenModel.create({ token, isActive: true, role: userObj.role });
       await UserModel.create(userObj);
 
-      res.status(200).json({ message: "User registered successfully" });
+      res
+        .status(200)
+        .json({ message: "User registered successfully", responseData });
     } catch (error) {
       console.error("Error registering admin:", error);
       res.status(500).json({ error: "Internal Server Error" });
