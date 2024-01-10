@@ -4,9 +4,9 @@ import { UserRegisterService } from "../services/user.register";
 
 @Service()
 export class UserRegisterController {
-  constructor(@Inject() private userSerice: UserRegisterService) {}
+  constructor(@Inject() private userRegisterSerice: UserRegisterService) {}
 
   registerUser(req: Request, res: Response) {
-    this.userSerice.registerUser(req, res);
+    this.userRegisterSerice.registerUser(req, res);
   }
 }

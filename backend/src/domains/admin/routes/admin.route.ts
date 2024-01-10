@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { Service } from "typedi";
-import { AdminRegisterController } from "../controllers/admin.register.controller";
-import { AdminLoginController } from "../controllers/admin.login.controller";
 import { UserListControllerForAdmin } from "../controllers/admin.get-users.controller";
 import { VerifyToken } from "../../common/middleware/verify-token";
 import { AddUserFromAdminController } from "../controllers/admin.add-user.controller";
@@ -12,8 +10,6 @@ export class AdminRouter {
   private router: Router;
 
   constructor(
-    private adminRegisterController: AdminRegisterController,
-    private adminLoginController: AdminLoginController,
     private userListControllerForAdmin: UserListControllerForAdmin,
     private addUserFromAdminController: AddUserFromAdminController,
     private logoutController: LogoutController,
@@ -29,18 +25,6 @@ export class AdminRouter {
   }
 
   private addRoutes() {
-    this.router.post(
-      "/register",
-      this.adminRegisterController.registerAdmin.bind(
-        this.adminRegisterController
-      )
-    );
-
-    this.router.post(
-      "/login",
-      this.adminLoginController.loginAdmin.bind(this.adminLoginController)
-    );
-
     this.router.get(
       "/getusers",
       this.verifyToken.verifyToken.bind(this.verifyToken),

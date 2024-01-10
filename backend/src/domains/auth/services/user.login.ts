@@ -21,13 +21,13 @@ export class UserLoginService {
       const user = await UserModel.findOne({ email });
 
       if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
+        return res.status(401).json({ error: "User does not exists" });
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return res.status(401).json({ error: "Invalid credentials" });
+        return res.status(401).json({ error: "Invalid Password" });
       }
 
       const token = this.createToken.createToken(user.email);
@@ -45,7 +45,7 @@ export class UserLoginService {
 
       return res.status(200).json({ responseData });
     } catch (error) {
-      console.error("Error during admin login:", error);
+      console.error("Error during login:", error);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
